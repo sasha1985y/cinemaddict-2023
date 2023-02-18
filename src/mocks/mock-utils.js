@@ -1,0 +1,3 @@
+const GLOBAL_INTEGER = 5;
+
+export {GLOBAL_INTEGER};
