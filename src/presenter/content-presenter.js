@@ -12,17 +12,22 @@ import PopupView from '../view/popup-view.js';
 
 export default class ContentPresenter {
 
-  profileView = new ProfileView();
-  filtersView = new FiltersView();
-  sortView = new SortView();
-  commonFilmsSection = new CommonFilmsSection();
-  filmsListSection = new FilmsListSection();
-  filmsListContainer = new FilmsListContainer();
-  sectionTopRated = new SectionTopRated();
-  sectionMostCommented = new SectionMostCommented();
+  #appHeaderContainer = null;
+  #appContainer = null;
+  #commentsModel = null;
+  #moviesModel = null;
 
-  contentComments = [];
-  contentMovies = [];
+  #profileView = new ProfileView();
+  #filtersView = new FiltersView();
+  #sortView = new SortView();
+  #commonFilmsSection = new CommonFilmsSection();
+  #filmsListSection = new FilmsListSection();
+  #filmsListContainer = new FilmsListContainer();
+  #sectionTopRated = new SectionTopRated();
+  #sectionMostCommented = new SectionMostCommented();
+
+  #contentComments = [];
+  #contentMovies = [];
 
   constructor({
     appHeaderContainer,
@@ -31,30 +36,64 @@ export default class ContentPresenter {
     moviesModel
 
   }) {
-    this.appHeaderContainer = appHeaderContainer;
-    this.appContainer = appContainer;
-    this.commentsModel = commentsModel;
-    this.moviesModel = moviesModel;
+    this.#appHeaderContainer = appHeaderContainer;
+    this.#appContainer = appContainer;
+    this.#commentsModel = commentsModel;
+    this.#moviesModel = moviesModel;
   }
 
   init = () => {
-    this.contentComments = [...this.commentsModel.getComments()];
-    this.contentMovies = [...this.moviesModel.getMovies()];
+    this.#contentComments = [...this.#commentsModel.comments];
+    this.#contentMovies = [...this.#moviesModel.movies];
 
-    render(this.profileView, this.appHeaderContainer);
-    render(this.filtersView, this.appContainer);
-    render(this.sortView, this.appContainer);
-    render(this.commonFilmsSection, this.appContainer);
-    render(this.filmsListSection, this.commonFilmsSection.getElement());
-    render(this.sectionTopRated, this.commonFilmsSection.getElement());
-    render(this.sectionMostCommented, this.commonFilmsSection.getElement());
+    render(this.#profileView, this.#appHeaderContainer);
+    render(this.#filtersView, this.#appContainer);
+    render(this.#sortView, this.#appContainer);
+    render(this.#commonFilmsSection, this.#appContainer);
+    render(this.#filmsListSection, this.#commonFilmsSection.element);
+    render(this.#sectionTopRated, this.#commonFilmsSection.element);
+    render(this.#sectionMostCommented, this.#commonFilmsSection.element);
 
-    render(this.filmsListContainer, this.filmsListSection.getElement());
+    render(this.#filmsListContainer, this.#filmsListSection.element);
 
-    for (let i = 0; i < this.contentMovies.length; i++) {
-      render(new FilmCard({movie: this.contentMovies[i]}), this.filmsListContainer.getElement());
+    for (let i = 0; i < this.#contentMovies.length; i++) {
+      this.#renderMovie({contentComments:this.#contentComments, movie: this.#contentMovies[i]});
     }
-    render(new PopupView(this.contentComments, this.contentMovies[0]), this.filmsListContainer.getElement());
 
   };
+
+  #renderMovie ({contentComments, movie}) {
+    const movieComponent = new FilmCard({movie});
+    const popupComponent = new PopupView({contentComments, movie});
+
+    const appendPopupByCard = () => {
+      this.#filmsListContainer.element.appendChild(popupComponent.element);
+    };
+
+    const removePopupFromCard = () => {
+      this.#filmsListContainer.element.removeChild(popupComponent.element);
+    };
+
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        removePopupFromCard();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    movieComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
+      appendPopupByCard();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+
+    popupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+      removePopupFromCard();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    render(movieComponent, this.#filmsListContainer.element);
+
+  }
+
 }

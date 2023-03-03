@@ -1,9 +1,11 @@
-import { commentsCollection } from '../mocks/mock-utils';
-
 export default class CommentsModel {
-  comments = Array.from(commentsCollection);
+  #commentsArray = null;
 
-  getComments() {
-    return this.comments;
+  constructor(commentsCollection) {
+    this.#commentsArray = Array.from(commentsCollection);
+  }
+
+  get comments() {
+    return this.#commentsArray ;
   }
 }
