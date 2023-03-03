@@ -5,11 +5,7 @@ const today = new Date();
 
 const getCommentsDateInfo = (date) => {
   const letIntArr = ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-  const days = dayjs(today).format('DD') - dayjs(date).format('DD');
-  const hours = dayjs(today).format('hh') - dayjs(date).format('hh');
-  const minutes = dayjs(today).format('mm') - dayjs(date).format('mm');
-  const seconds = dayjs(today).format('ss') - dayjs(date).format('ss');
-  const differencial = Math.abs(((days * 86400) + (hours * 3600) + (minutes * 60) + seconds) / 86400).toFixed(0);
+  const differencial = Math.floor(((today - new Date(date)) / 1000) / 86400);
   if (differencial === '0') {
     return 'Today';
   } else if (differencial === '1') {
@@ -106,7 +102,7 @@ const renderCurrentInfo = (writers, actors, date, duration, releaseCountry, genr
 );
 
 
-const createPopupViewTemplate = (contentComments, movie) => {
+const createPopupViewTemplate = ({contentComments, movie}) => {
   const {comments, filmInfo} = movie;
   const {release, title, totalRating, duration, genre, poster, description, writers, actors} = filmInfo;
   const {date, releaseCountry} = release;
@@ -193,24 +189,28 @@ const createPopupViewTemplate = (contentComments, movie) => {
 };
 export default class PopupView {
 
+  #element = null;
+  #contentComments = null;
+  #movie = null;
+
   constructor(contentComments, movie) {
-    this.contentComments = contentComments;
-    this.movie = movie;
+    this.#contentComments = contentComments;
+    this.#movie = movie;
   }
 
-  getTemplate() {
-    return createPopupViewTemplate(this.contentComments, this.movie);
+  get template() {
+    return createPopupViewTemplate(this.#contentComments, this.#movie);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

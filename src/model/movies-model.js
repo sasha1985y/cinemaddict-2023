@@ -1,9 +1,11 @@
-import { movieArr } from '../mocks/mock-utils';
-
 export default class MoviesModel {
-  movies = movieArr;
+  #moviesArray = null;
 
-  getMovies() {
-    return this.movies;
+  constructor(movieArr) {
+    this.#moviesArray = movieArr;
+  }
+
+  get movies() {
+    return this.#moviesArray;
   }
 }
