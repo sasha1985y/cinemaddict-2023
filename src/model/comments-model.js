@@ -1,8 +1,8 @@
 export default class CommentsModel {
   #commentsArray = null;
 
-  constructor(commentsCollection) {
-    this.#commentsArray = Array.from(commentsCollection);
+  constructor(commentArr) {
+    this.#commentsArray = commentArr;
   }
 
   get comments() {

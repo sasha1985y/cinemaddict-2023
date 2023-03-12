@@ -2,12 +2,12 @@ import ContentPresenter from './presenter/content-presenter.js';
 import CommentsModel from './model/comments-model.js';
 import MoviesModel from './model/movies-model.js';
 import { movieArr } from './mocks/mock-utils.js';
-import { commentsCollection } from './mocks/mock-utils.js';
+import { commentArr } from './mocks/mock-utils.js';
 
 const appHeaderElement = document.querySelector('.header');
 const appMainElement = document.querySelector('.main');
 
-const commentsModel = new CommentsModel(commentsCollection);
+const commentsModel = new CommentsModel(commentArr);
 const moviesModel = new MoviesModel(movieArr);
 
 const contentPresenter = new ContentPresenter({

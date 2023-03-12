@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-const GLOBAL_INTEGER = 5;
+const GLOBAL_INTEGER = 13;
 const MIN_MONTHS = 1;
 const SOME_DAYS = 15;
 const MAX_HOURS = 24;
@@ -8,7 +8,7 @@ const MAX_MINUTES = 60;
 const MIN_YEARS = 30;
 const MIN_DURATION = 45;
 const MAX_DURATION = 120;
-
+const MAX_LENGTH_COMMENT_ARRAY = 100;
 
 const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -59,9 +59,9 @@ const generateReleaseDate = () => {
   return releaseTime;
 };
 
-const createRandomLengthCommentArr = () => {
+const createCommentArr = () => {
   const localCommentArray = [];
-  for (let i = 0; i < getRandomInteger(0, GLOBAL_INTEGER); i++) {
+  for (let i = 0; i < MAX_LENGTH_COMMENT_ARRAY; i++) {
     const localObj = {
       id: 1,
       author: AUTORS[getRandomInteger(0, AUTORS.length - 1)],
@@ -75,23 +75,20 @@ const createRandomLengthCommentArr = () => {
   return localCommentArray;
 };
 
-const createComment = () => {
-  const localCommentCollection = new Map();
-  for (let i = 0; i < GLOBAL_INTEGER; i++) {
-    localCommentCollection.set(i + 1, createRandomLengthCommentArr());
-  }
-  return localCommentCollection;
+const commentArr = createCommentArr();
+
+const createRandomIdArr = (arr) => {
+  const removed = arr.splice(0, getRandomInteger(0, GLOBAL_INTEGER));
+  return {0: removed, 1: arr};
 };
 
-const commentsCollection = createComment();
-
-
 const createMovie = () => {
+  let localMovieCommentArr = commentArr.map((comment) => comment.id).slice();
   const localMovieArr = [];
   for (let i = 0; i < GLOBAL_INTEGER; i++) {
     const localMovie = {
       id: 1,
-      comments: Array.from(commentsCollection.get(i + 1)).map((comment) => comment.id),
+      comments: createRandomIdArr(localMovieCommentArr)[0],
       filmInfo: {
         title: TITLES[getRandomInteger(0, TITLES.length - 1)],
         alternativeTitle: ALTERNATIVE_TITLES[getRandomInteger(0, ALTERNATIVE_TITLES.length - 1)],
@@ -118,10 +115,12 @@ const createMovie = () => {
     };
     localMovieArr.push(localMovie);
     localMovie.id = i + 1;
+
   }
+  localMovieCommentArr = createRandomIdArr(localMovieCommentArr)[1];
   return localMovieArr;
 };
 
 const movieArr = createMovie();
 
-export {GLOBAL_INTEGER, movieArr, commentsCollection};
+export {GLOBAL_INTEGER, movieArr, commentArr};
