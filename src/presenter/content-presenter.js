@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import { render, RenderPosition } from '../render.js';
 import ProfileView from '../view/profile-view.js';
 import FiltersView from '../view/filters-view.js';
 import SortView from '../view/sort-view.js';
@@ -9,6 +9,10 @@ import SectionTopRated from '../view/section-top-rated.js';
 import SectionMostCommented from '../view/section-most-commented.js';
 import FilmCard from '../view/film-card-view.js';
 import PopupView from '../view/popup-view.js';
+import ShowMoreButtonView from '../view/show-more-button.js';
+import ListEmpty from '../view/list-empty-view.js';
+
+const MOVIE_COUNT_PER_STEP = 5;
 
 export default class ContentPresenter {
 
@@ -16,6 +20,7 @@ export default class ContentPresenter {
   #appContainer = null;
   #commentsModel = null;
   #moviesModel = null;
+  #showMoreButtonComponent = null;
 
   #profileView = new ProfileView();
   #filtersView = new FiltersView();
@@ -28,6 +33,7 @@ export default class ContentPresenter {
 
   #contentComments = [];
   #contentMovies = [];
+  #renderedMovieCount = MOVIE_COUNT_PER_STEP;
 
   constructor({
     appHeaderContainer,
@@ -56,15 +62,25 @@ export default class ContentPresenter {
 
     render(this.#filmsListContainer, this.#filmsListSection.element);
 
-    for (let i = 0; i < this.#contentMovies.length; i++) {
-      this.#renderMovie({contentComments:this.#contentComments, movie: this.#contentMovies[i]});
+    if (this.#contentMovies.length === 0) {
+      render(new ListEmpty(), this.#filmsListSection.element);
+    } else {
+      for (let i = 0; i < Math.min(this.#contentMovies.length, MOVIE_COUNT_PER_STEP); i++) {
+        this.#renderMovie({ contentComments: this.#contentComments, movie: this.#contentMovies[i] });
+      }
+
+      if (this.#contentMovies.length > MOVIE_COUNT_PER_STEP) {
+        this.#showMoreButtonComponent = new ShowMoreButtonView();
+        render(this.#showMoreButtonComponent, this.#filmsListContainer.element);
+        this.#showMoreButtonComponent.element.addEventListener('click', this.#showMoreButtonClickHandler);
+      }
     }
 
   };
 
-  #renderMovie ({contentComments, movie}) {
-    const movieComponent = new FilmCard({movie});
-    const popupComponent = new PopupView({contentComments, movie});
+  #renderMovie ({ contentComments, movie }) {
+    const movieComponent = new FilmCard({ movie });
+    const popupComponent = new PopupView({ contentComments, movie });
 
     const appendPopupByCard = () => {
       this.#filmsListContainer.element.appendChild(popupComponent.element);
@@ -92,8 +108,20 @@ export default class ContentPresenter {
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    render(movieComponent, this.#filmsListContainer.element);
-
+    render(movieComponent, this.#filmsListContainer.element, RenderPosition.AFTERBEGIN);
   }
 
+  #showMoreButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#contentMovies
+      .slice(this.#renderedMovieCount, this.#renderedMovieCount + MOVIE_COUNT_PER_STEP)
+      .forEach((movie) => this.#renderMovie({contentComments: this.#contentComments, movie}));
+
+    this.#renderedMovieCount += MOVIE_COUNT_PER_STEP;
+
+    if (this.#renderedMovieCount >= this.#contentMovies.length) {
+      this.#showMoreButtonComponent.element.remove();
+      this.#showMoreButtonComponent.removeElement();
+    }
+  };
 }

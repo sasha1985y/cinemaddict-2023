@@ -17,10 +17,34 @@ const getCommentsDateInfo = (date) => {
   }
 };
 
+/*const findComments = (contentComments, movie) => {
+  const currentCommentArray = [];
+  for (let i = 0; i < contentComments.length; i++) {
+    const element = contentComments[i];
+    for (let j = 0; j < movie.comments.length; j++) {
+      const movieCommentId = movie.comments[j];
+      if (element.id === movieCommentId) {
+        currentCommentArray.push(element);
+      }
+    }
+  }
+  return currentCommentArray;
+};*/
+
 const renderCurrentComments = (contentComments, movie) => {
   let listComments = '';
-  const currentCommentsArr = contentComments.find((item) =>item[0] === movie.id);
-  currentCommentsArr[1].map((comment) => {
+  const currentCommentArray = [];
+  for (let i = 0; i < contentComments.length; i++) {
+    const element = contentComments[i];
+    for (let j = 0; j < movie.comments.length; j++) {
+      const movieCommentId = movie.comments[j];
+      if (element.id === movieCommentId) {
+        currentCommentArray.push(element);
+      }
+    }
+  }
+
+  currentCommentArray.map((comment) => {
     const {emotion, author, date} = comment;
     listComments +=
     `<li class="film-details__comment">
