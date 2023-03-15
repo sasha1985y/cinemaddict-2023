@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import dayjs from 'dayjs';
 
 const today = new Date();
@@ -16,20 +16,6 @@ const getCommentsDateInfo = (date) => {
     return dayjs(date).format('YYYY/MM/DD HH:mm');
   }
 };
-
-/*const findComments = (contentComments, movie) => {
-  const currentCommentArray = [];
-  for (let i = 0; i < contentComments.length; i++) {
-    const element = contentComments[i];
-    for (let j = 0; j < movie.comments.length; j++) {
-      const movieCommentId = movie.comments[j];
-      if (element.id === movieCommentId) {
-        currentCommentArray.push(element);
-      }
-    }
-  }
-  return currentCommentArray;
-};*/
 
 const renderCurrentComments = (contentComments, movie) => {
   let listComments = '';
@@ -126,7 +112,7 @@ const renderCurrentInfo = (writers, actors, date, duration, releaseCountry, genr
 );
 
 
-const createPopupViewTemplate = ({contentComments, movie}) => {
+const createPopupViewTemplate = (contentComments, movie) => {
   const {comments, filmInfo} = movie;
   const {release, title, totalRating, duration, genre, poster, description, writers, actors} = filmInfo;
   const {date, releaseCountry} = release;
@@ -211,30 +197,28 @@ const createPopupViewTemplate = ({contentComments, movie}) => {
     </section>`
   );
 };
-export default class PopupView {
+export default class PopupView extends AbstractView{
 
-  #element = null;
   #contentComments = null;
   #movie = null;
+  #handleCloseBtnClick = null;
 
-  constructor(contentComments, movie) {
+  constructor({contentComments, movie, onCloseBtnClick}) {
+    super();
     this.#contentComments = contentComments;
     this.#movie = movie;
+    this.#handleCloseBtnClick = onCloseBtnClick;
+
+    this.element.querySelector('.film-details__close-btn')
+      .addEventListener('click', this.#closeBtnClickHandler);
   }
 
   get template() {
     return createPopupViewTemplate(this.#contentComments, this.#movie);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #closeBtnClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseBtnClick();
+  };
 }
