@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import dayjs from 'dayjs';
 
 const renderShortDescription = (description) => {
@@ -10,9 +10,22 @@ const renderShortDescription = (description) => {
 };
 
 const createFilmCardTemplate = (movie) => {
-  const {comments, filmInfo} = movie;
+  const {comments, filmInfo, userDetails} = movie;
+  const {watchlist, alreadyWatched, favorite} = userDetails;
   const {release, title, totalRating, duration, genre, poster, description} = filmInfo;
   const {date} = release;
+
+  const watchlistClassName = watchlist
+    ? 'film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active'
+    : 'film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--disabled';
+
+  const alreadyWatchedClassName = alreadyWatched
+    ? 'film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active'
+    : 'film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--disabled';
+
+  const favoriteClassName = favorite
+    ? 'film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active'
+    : 'film-card__controls-item film-card__controls-item--favorite film-card__controls-item--disabled';
 
   return (
     `<article class="film-card">
@@ -29,35 +42,33 @@ const createFilmCardTemplate = (movie) => {
         <span class="film-card__comments">${comments.length}comments</span>
       </a>
       <div class="film-card__controls">
-        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
-        <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-        <button class="film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active" type="button">Mark as favorite</button>
+        <button class="${watchlistClassName}" type="button">Add to watchlist</button>
+        <button class="${alreadyWatchedClassName}" type="button">Mark as watched</button>
+        <button class="${favoriteClassName}" type="button">Mark as favorite</button>
       </div>
     </article>`
   );
 };
 
-export default class FilmCard {
-  #element = null;
+export default class FilmCard extends AbstractView {
   #movie = null;
+  #handleMovieClick = null;
 
-  constructor({movie}) {
+  constructor({movie, onMovieClick}) {
+    super();
     this.#movie = movie;
+    this.#handleMovieClick = onMovieClick;
+
+    this.element.querySelector('.film-card__link')
+      .addEventListener('click', this.#movieClickHandler);
   }
 
   get template() {
     return createFilmCardTemplate(this.#movie);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #movieClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleMovieClick();
+  };
 }
