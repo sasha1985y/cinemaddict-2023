@@ -6,6 +6,7 @@ import { commentArr } from './mocks/mock-utils.js';
 
 const appHeaderElement = document.querySelector('.header');
 const appMainElement = document.querySelector('.main');
+const appFooterStatisticsElement = document.querySelector('.footer__statistics');
 
 const commentsModel = new CommentsModel(commentArr);
 const moviesModel = new MoviesModel(movieArr);
@@ -13,6 +14,7 @@ const moviesModel = new MoviesModel(movieArr);
 const contentPresenter = new ContentPresenter({
   appHeaderContainer: appHeaderElement,
   appContainer: appMainElement,
+  appFooterStatisticsContainer: appFooterStatisticsElement,
   commentsModel,
   moviesModel
 });
