@@ -17,15 +17,15 @@ const createFilmCardTemplate = (movie) => {
 
   const watchlistClassName = watchlist
     ? 'film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active'
-    : 'film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--disabled';
+    : 'film-card__controls-item film-card__controls-item--add-to-watchlist';
 
   const alreadyWatchedClassName = alreadyWatched
     ? 'film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active'
-    : 'film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--disabled';
+    : 'film-card__controls-item film-card__controls-item--mark-as-watched';
 
   const favoriteClassName = favorite
     ? 'film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active'
-    : 'film-card__controls-item film-card__controls-item--favorite film-card__controls-item--disabled';
+    : 'film-card__controls-item film-card__controls-item--favorite';
 
   return (
     `<article class="film-card">
@@ -70,5 +70,6 @@ export default class FilmCard extends AbstractView {
   #movieClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleMovieClick();
+    document.body.classList.add('hide-overflow');
   };
 }

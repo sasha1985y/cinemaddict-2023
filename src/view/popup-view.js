@@ -220,5 +220,6 @@ export default class PopupView extends AbstractView{
   #closeBtnClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseBtnClick();
+    document.body.classList.remove('hide-overflow');
   };
 }

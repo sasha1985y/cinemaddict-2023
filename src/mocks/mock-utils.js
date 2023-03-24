@@ -10,6 +10,7 @@ const MIN_DURATION = 45;
 const MAX_DURATION = 120;
 const MAX_LENGTH_COMMENT_ARRAY = 100;
 
+
 const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -123,4 +124,4 @@ const createMovie = () => {
 
 const movieArr = createMovie();
 
-export {GLOBAL_INTEGER, movieArr, commentArr};
+export {GLOBAL_INTEGER, movieArr, commentArr,};
