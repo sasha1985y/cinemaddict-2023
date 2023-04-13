@@ -113,9 +113,23 @@ const renderCurrentInfo = (writers, actors, date, duration, releaseCountry, genr
 
 
 const createPopupViewTemplate = (contentComments, movie) => {
-  const {comments, filmInfo} = movie;
+  const {comments, filmInfo, userDetails} = movie;
+  const {watchlist, alreadyWatched, favorite} = userDetails;
   const {release, title, totalRating, duration, genre, poster, description, writers, actors} = filmInfo;
   const {date, releaseCountry} = release;
+
+  const popupWatchlistClassName = watchlist
+    ? 'film-details__control-button film-details__control-button--active film-details__control-button--watchlist'
+    : 'film-details__control-button film-details__control-button--watchlist';
+
+  const popupAlreadyWatchedClassName = alreadyWatched
+    ? 'film-details__control-button film-details__control-button--active film-details__control-button--watched'
+    : 'film-details__control-button film-details__control-button--watched';
+
+  const popupFavoriteClassName = favorite
+    ? 'film-details__control-button film-details__control-button--active film-details__control-button--favorite'
+    : 'film-details__control-button film-details__control-button--favorite';
+
   return (
 
     `<section class="film-details">
@@ -150,9 +164,9 @@ const createPopupViewTemplate = (contentComments, movie) => {
           </div>
   
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-            <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-            <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+            <button type="button" class="${popupWatchlistClassName}" id="watchlist" name="watchlist">Add to watchlist</button>
+            <button type="button" class="${popupAlreadyWatchedClassName}" id="watched" name="watched">Already watched</button>
+            <button type="button" class="${popupFavoriteClassName}" id="favorite" name="favorite">Add to favorites</button>
           </section>
         </div>
   
@@ -202,15 +216,30 @@ export default class PopupView extends AbstractView{
   #contentComments = null;
   #movie = null;
   #handleCloseBtnClick = null;
+  #handleWatchlistClick = null;
+  #handleHistoryClick = null;
+  #handleFavoriteClick = null;
 
-  constructor({contentComments, movie, onCloseBtnClick}) {
+  constructor({contentComments, movie, onCloseBtnClick, onWatchlistClick, onHistoryClick, onFavoriteClick}) {
     super();
     this.#contentComments = contentComments;
     this.#movie = movie;
     this.#handleCloseBtnClick = onCloseBtnClick;
+    this.#handleWatchlistClick = onWatchlistClick;
+    this.#handleHistoryClick = onHistoryClick;
+    this.#handleFavoriteClick = onFavoriteClick;
 
     this.element.querySelector('.film-details__close-btn')
       .addEventListener('click', this.#closeBtnClickHandler);
+
+    this.element.querySelector('.film-details__control-button--watchlist')
+      .addEventListener('click', this.#movieWatchlistClickHandler);
+
+    this.element.querySelector('.film-details__control-button--watched')
+      .addEventListener('click', this.#movieHistoryClickHandler);
+
+    this.element.querySelector('.film-details__control-button--favorite')
+      .addEventListener('click', this.#movieFavoriteClickHandler);
   }
 
   get template() {
@@ -221,5 +250,32 @@ export default class PopupView extends AbstractView{
     evt.preventDefault();
     this.#handleCloseBtnClick();
     document.body.classList.remove('hide-overflow');
+  };
+
+  #movieWatchlistClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleWatchlistClick();
+    evt.target.classList.toggle('film-details__control-button--active');
+    document.querySelector(`.${this.#movie.id}`)
+      .querySelector('.film-card__controls-item--add-to-watchlist')
+      .classList.toggle('film-card__controls-item--active');
+  };
+
+  #movieHistoryClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleHistoryClick();
+    evt.target.classList.toggle('film-details__control-button--active');
+    document.querySelector(`.${this.#movie.id}`)
+      .querySelector('.film-card__controls-item--mark-as-watched')
+      .classList.toggle('film-card__controls-item--active');
+  };
+
+  #movieFavoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+    evt.target.classList.toggle('film-details__control-button--active');
+    document.querySelector(`.${this.#movie.id}`)
+      .querySelector('.film-card__controls-item--favorite')
+      .classList.toggle('film-card__controls-item--active');
   };
 }

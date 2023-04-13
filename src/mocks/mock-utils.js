@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
-const GLOBAL_INTEGER = 13;
+const GLOBAL_INTEGER = 33;
 const MIN_MONTHS = 1;
 const SOME_DAYS = 15;
 const MAX_HOURS = 24;
@@ -88,7 +89,7 @@ const createMovie = () => {
   const localMovieArr = [];
   for (let i = 0; i < GLOBAL_INTEGER; i++) {
     const localMovie = {
-      id: 1,
+      id: nanoid(),
       comments: createRandomIdArr(localMovieCommentArr)[0],
       filmInfo: {
         title: TITLES[getRandomInteger(0, TITLES.length - 1)],
@@ -115,7 +116,6 @@ const createMovie = () => {
       }
     };
     localMovieArr.push(localMovie);
-    localMovie.id = i + 1;
 
   }
   localMovieCommentArr = createRandomIdArr(localMovieCommentArr)[1];
@@ -124,4 +124,4 @@ const createMovie = () => {
 
 const movieArr = createMovie();
 
-export {GLOBAL_INTEGER, movieArr, commentArr,};
+export {GLOBAL_INTEGER, movieArr, commentArr};
